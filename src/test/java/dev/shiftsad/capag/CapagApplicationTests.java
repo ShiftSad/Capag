@@ -1,4 +1,4 @@
-package codes.shiftmc.capag;
+package dev.shiftsad.capag;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
