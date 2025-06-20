@@ -39,6 +39,7 @@ def import_ibge(conn):
     df["COD. MUNIC"] = df["COD. MUNIC"].str.zfill(5)
 
     df = df.drop_duplicates(subset=["COD. MUNIC"], keep="first")
+    df = df[df["POP_ESTIMADA"].notnull()]
 
     tuples = [
         (r.UF, r["COD. UF"], r["COD. MUNIC"], r["NOME DO MUNICÍPIO"],
