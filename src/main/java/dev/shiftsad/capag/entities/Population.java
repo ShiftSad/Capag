@@ -2,6 +2,8 @@ package dev.shiftsad.capag.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -15,11 +17,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Population {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-
-    @Column(name = "COD_MUNICIPIO", length = 5)
-    private String codMunicipio;
 
     @Column(name = "UF", length = 2, nullable = false)
     private String uf;
@@ -27,7 +27,10 @@ public class Population {
     @Column(name = "COD_UF", length = 2, nullable = false)
     private String codUf;
 
-    @Column(name = "MUNICIPIO", length = 255, nullable = false)
+    @Column(name = "COD_MUNICIPIO", length = 5)
+    private String codMunicipio;
+
+    @Column(name = "MUNICIPIO", nullable = false)
     private String municipio;
 
     @Column(name = "POPULACAO", nullable = false)

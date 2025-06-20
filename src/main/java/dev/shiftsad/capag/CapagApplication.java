@@ -9,5 +9,4 @@ public class CapagApplication {
     public static void main(String[] args) {
         SpringApplication.run(CapagApplication.class, args);
     }
-
 }
