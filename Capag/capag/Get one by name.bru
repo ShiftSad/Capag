@@ -5,7 +5,11 @@ meta {
 }
 
 get {
-  url: {{ip}}/capag
+  url: {{ip}}/capag?nomeMunicipio=Piracicaba
   body: none
   auth: inherit
+}
+
+params:query {
+  nomeMunicipio: Piracicaba
 }

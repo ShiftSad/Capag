@@ -2,14 +2,13 @@ package dev.shiftsad.capag.controller;
 
 import dev.shiftsad.capag.entities.Population;
 import dev.shiftsad.capag.repositories.PopulationRepository;
-import jakarta.persistence.Transient;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.stream.StreamSupport;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -17,37 +16,24 @@ public class PopulationController {
 
     private final PopulationRepository populationRepository;
 
-    @Transient
-    private int mostRecentYear = -1;
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    }
 
     @GetMapping("/population")
-    public Iterable<Population> getPopulation(@RequestParam(name = "ano") int ano) {
-        return StreamSupport.stream(populationRepository.findAll().spliterator(), false)
-                .filter(population -> population.getAno().equals(ano))
-                .toList();
-    }
+    public Iterable<Population> search(@ModelAttribute Population probe) {
+        ExampleMatcher matcher = ExampleMatcher
+                .matchingAll()
+                .withIgnoreNullValues()
+                .withIgnoreCase();
 
-    @GetMapping("/population/")
-    public Population getPopulationByMunicipio(@RequestParam(name = "ano") int ano,
-                                               @RequestParam(name = "codMunicipio") String codMunicipio) {
-        return populationRepository.findByCodMunicipioAndAno(codMunicipio, ano);
-    }
-
-    @GetMapping("/population/recent")
-    public Population getRecentPopulation(@RequestParam(name = "codMunicipio") String codMunicipio) {
-        return populationRepository.findByCodMunicipioAndAno(codMunicipio, getMostRecentYear());
-    }
-
-    @GetMapping("/population/recent/")
-    public Iterable<Population> getRecentPopulationAll() {
-        return StreamSupport.stream(populationRepository.findAll().spliterator(), false)
-                .filter(population -> population.getAno().equals(getMostRecentYear()))
-                .toList();
+        Example<Population> example = Example.of(probe, matcher);
+        return populationRepository.findAll(example);
     }
 
     @GetMapping("/population/recent/year")
-    public Integer getMostRecentYear() {
-        if (mostRecentYear == -1) return mostRecentYear = populationRepository.getMostRecentYear();
-        return mostRecentYear;
+    public Integer mostRecentYear() {
+        return populationRepository.getMostRecentYear();
     }
 }
