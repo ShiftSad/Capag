@@ -44,3 +44,11 @@ tasks.register<BootRun>("importIbge") {
     classpath = sourceSets.main.get().runtimeClasspath
     args("--import", "ibge")
 }
+
+tasks.register<BootRun>("importCapag") {
+    group = "import"
+    description = "Import Capag data into the database"
+    mainClass.set("dev.shiftsad.capag.CapagApplication")
+    classpath = sourceSets.main.get().runtimeClasspath
+    args("--import", "capag")
+}

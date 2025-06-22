@@ -40,6 +40,7 @@ public class IbgeImporter {
 
         // Remove header
         records.removeFirst();
+        log.info("Importing {} records from IBGE population data file for year {}...", records.size(), ano);
 
         for (List<String> record : records) {
             if (record.size() < 3) {
@@ -61,7 +62,7 @@ public class IbgeImporter {
                 population.setAno(ano);
 
                 populationRepository.save(population);
-            } else log.info("Data for municipality {} in year {} already exists, skipping.", codMunicipio, ano);
+            }
         }
 
         log.info("Population data import completed successfully.");
