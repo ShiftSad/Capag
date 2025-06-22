@@ -1,0 +1,15 @@
+meta {
+  name: Get One by Id
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{ip}}/capag?codMunicipio=1100015
+  body: none
+  auth: inherit
+}
+
+params:query {
+  codMunicipio: 1100015
+}
