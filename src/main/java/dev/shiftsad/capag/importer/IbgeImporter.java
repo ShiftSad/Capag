@@ -52,17 +52,15 @@ public class IbgeImporter {
             var municipio = record.get(3).trim();
             var populacao = Integer.parseInt(record.get(4).trim().replace(".", ""));
 
-            if (populationRepository.findByCodMunicipioAndAno(codMunicipio, ano) == null) {
-                Population population = new Population();
-                population.setCodUf(codUf);
-                population.setUf(uf);
-                population.setCodMunicipio(codMunicipio);
-                population.setMunicipio(municipio);
-                population.setPopulacao(populacao);
-                population.setAno(ano);
+            Population population = new Population();
+            population.setCodUf(codUf);
+            population.setUf(uf);
+            population.setCodMunicipio(codMunicipio);
+            population.setMunicipio(municipio);
+            population.setPopulacao(populacao);
+            population.setAno(ano);
 
-                populationRepository.save(population);
-            }
+            populationRepository.save(population);
         }
 
         log.info("Population data import completed successfully.");
