@@ -7,10 +7,7 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,6 +22,7 @@ public class CapagController {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/capag")
     public List<Capag> searchCapag(@ModelAttribute Capag probe) {
         ExampleMatcher matcher = ExampleMatcher
