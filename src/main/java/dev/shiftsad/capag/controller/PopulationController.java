@@ -21,6 +21,7 @@ public class PopulationController {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
+    @Cacheable("searchPopulation")
     @CrossOrigin(origins = "*")
     @GetMapping("/population")
     public Iterable<Population> search(@ModelAttribute Population probe) {
@@ -33,6 +34,7 @@ public class PopulationController {
         return populationRepository.findAll(example);
     }
 
+    @Cacheable("populationByYear")
     @CrossOrigin(origins = "*")
     @GetMapping("/population/recent/year")
     public Integer mostRecentYear() {
