@@ -14,7 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,6 +33,13 @@ public class PdfOcrService {
     private final static Logger logger = LoggerFactory.getLogger(PdfOcrService.class);
 
     private final static ExecutorService ocrExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+    public PdfOcrService() {
+        ImageIO.setUseCache(true);
+        ImageIO.setCacheDirectory(new File(System.getProperty("java.io.tmpdir")));
+        logger.info("ImageIO cache configurado para usar diretório temporário: {}",
+                System.getProperty("java.io.tmpdir"));
+    }
 
     public String extractTextFromPdf(byte[] pdfBytes) {
         logger.info("Iniciando extração de texto, tamanho: {} bytes", pdfBytes.length);
