@@ -4,7 +4,11 @@ import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +34,14 @@ public class PdfOcrService {
 
     public String extractTextFromPdf(byte[] pdfBytes) {
         logger.info("Iniciando extração de texto, tamanho: {} bytes", pdfBytes.length);
-        try (PDDocument document = Loader.loadPDF(pdfBytes)) {
+        RandomAccessRead randomAccessRead = new RandomAccessReadBuffer(pdfBytes);
+        try (PDDocument document = Loader.loadPDF(
+                randomAccessRead,
+                null,
+                null,
+                null,
+                IOUtils.createTempFileOnlyStreamCache())) {
+
             PDFRenderer renderer = new PDFRenderer(document);
             int pageCount = document.getNumberOfPages();
             logger.info("Número de páginas: {}", pageCount);
@@ -38,7 +49,7 @@ public class PdfOcrService {
             List<BufferedImage> images = new ArrayList<>(pageCount);
             for (int i = 0; i < pageCount; i++) {
                 try {
-                    images.add(renderer.renderImageWithDPI(i, 300));
+                    images.add(renderer.renderImageWithDPI(i, 300, ImageType.GRAY));
                 } catch (IOException e) {
                     logger.error("Falha ao renderizar página {}: {}", i, e.getMessage());
                     images.add(null);
@@ -81,7 +92,7 @@ public class PdfOcrService {
         ITesseract tesseract = new Tesseract();
         tesseract.setDatapath(tessDataPath);
         tesseract.setLanguage("por");
-        tesseract.setPageSegMode(1);
+        tesseract.setPageSegMode(3);
         tesseract.setOcrEngineMode(1);
         try {
             String text = tesseract.doOCR(image);

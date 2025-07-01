@@ -43,6 +43,10 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+configurations.all {
+    exclude(group = "commons-logging", module = "commons-logging")
+}
+
 tasks.register<BootRun>("importIbge") {
     group = "import"
     description = "Import IBGE data into the database"
