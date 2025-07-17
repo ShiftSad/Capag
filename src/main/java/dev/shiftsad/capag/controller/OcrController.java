@@ -3,11 +3,17 @@ package dev.shiftsad.capag.controller;
 import dev.shiftsad.capag.service.PdfOcrService;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 @AllArgsConstructor
 @RestController
@@ -17,12 +23,20 @@ public class OcrController {
 
     @Cacheable("ocrPdf")
     @CrossOrigin(origins = "*")
-    @PostMapping("/ocr/pdf")
-    public String ocrPdf(@RequestParam("file") MultipartFile file) {
-        try {
-            return pdfOcrService.extractTextFromPdf(file.getBytes());
-        } catch (Exception e) {
-            return "Error processing PDF file: " + e.getMessage();
-        }
+    @PostMapping(value = "/ocr/pdf", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Mono<String> ocrPdf(@RequestPart("file") Mono<FilePart> file) {
+        return file
+                .flatMap(fp -> fp.content()
+                        .publishOn(Schedulers.boundedElastic())
+                        .reduce(new ByteArrayOutputStream(), (baos, dataBuffer) -> {
+                            ByteBuffer buffer = ByteBuffer.allocate(dataBuffer.readableByteCount());
+                            dataBuffer.toByteBuffer(buffer);
+                            baos.write(buffer.array(), buffer.position(), buffer.remaining());
+                            return baos;
+                        })
+                        .map(ByteArrayOutputStream::toByteArray)
+                        .map(pdfOcrService::extractTextFromPdf)
+                        .onErrorResume(e -> Mono.just("Error processing PDF file: " + e.getMessage()))
+                );
     }
 }

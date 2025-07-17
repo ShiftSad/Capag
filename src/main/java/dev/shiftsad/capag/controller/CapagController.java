@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @AllArgsConstructor
 @RestController
@@ -29,31 +31,32 @@ public class CapagController {
     @Cacheable("searchCapag")
     @CrossOrigin(origins = "*")
     @GetMapping("/capag")
-    public List<Capag> searchCapag(@ModelAttribute Capag probe) {
+    public Flux<Capag> searchCapag(@ModelAttribute Capag probe) {
         ExampleMatcher matcher = ExampleMatcher
                 .matchingAll()
                 .withIgnoreNullValues()
                 .withIgnoreCase();
 
         Example<Capag> example = Example.of(probe, matcher);
-        return capagRepository.findAll(example);
+        return Flux.fromIterable(capagRepository.findAll(example));
     }
 
     @Cacheable("batchCapag")
     @PostMapping("/capag/batch")
     @CrossOrigin(origins = "*")
-    public Map<String, Capag> getBatchCapag(@RequestBody List<MunicipioDataRequest> requests) {
-        List<String> municipios = requests.stream().map(MunicipioDataRequest::getMunicipio).toList();
-        List<String> ufs = requests.stream().map(MunicipioDataRequest::getUf).toList();
+    public Mono<Map<String, Capag>> getBatchCapag(@RequestBody List<MunicipioDataRequest> requests) {
+        return Mono.fromCallable(() -> {
+            List<String> municipios = requests.stream().map(MunicipioDataRequest::getMunicipio).toList();
+            List<String> ufs = requests.stream().map(MunicipioDataRequest::getUf).toList();
 
-        List<Capag> capags = capagRepository.findByNomeMunicipioInAndUfIn(municipios, ufs);
+            List<Capag> capags = capagRepository.findByNomeMunicipioInAndUfIn(municipios, ufs);
 
-        Map<String, Capag> responseMap = new HashMap<>();
-        for (Capag capag : capags) {
-            String key = capag.getNomeMunicipio() + "-" + capag.getUf();
-            responseMap.put(key, capag);
-        }
-
-        return responseMap;
+            Map<String, Capag> responseMap = new HashMap<>();
+            for (Capag capag : capags) {
+                String key = capag.getNomeMunicipio() + "-" + capag.getUf();
+                responseMap.put(key, capag);
+            }
+            return responseMap;
+        });
     }
 }
