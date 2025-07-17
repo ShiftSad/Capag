@@ -5,6 +5,7 @@ plugins {
     id("org.springframework.boot") version "3.5.0"
     id("io.spring.dependency-management") version "1.1.7"
 }
+val springAiVersion by extra("1.0.0")
 
 group = "dev.shiftsad"
 version = "0.0.1-SNAPSHOT"
@@ -28,11 +29,13 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("net.sourceforge.tess4j:tess4j:5.16.0")
     implementation("org.apache.pdfbox:pdfbox:3.0.5")
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.1")
+    implementation("org.springframework.ai:spring-ai-starter-model-vertex-ai-gemini")
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql")
@@ -41,6 +44,11 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.ai:spring-ai-bom:$springAiVersion")
+    }
 }
 
 configurations.all {
