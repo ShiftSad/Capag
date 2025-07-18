@@ -31,6 +31,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-cache")
+    compileOnly("org.jetbrains:annotations:26.0.2")
     implementation("net.sourceforge.tess4j:tess4j:5.16.0")
     implementation("org.apache.pdfbox:pdfbox:3.0.5")
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.1")

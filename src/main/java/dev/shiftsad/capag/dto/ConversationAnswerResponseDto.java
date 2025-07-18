@@ -1,16 +1,21 @@
 package dev.shiftsad.capag.dto;
 
 import lombok.Data;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
 
 @Data
 public class ConversationAnswerResponseDto {
-    private String conversationId;
+    private String conversation_id;
     private String status;
-    private List<Map<String, String>> questions;
+    @Nullable
+    private List<Map<String, Object>> questions;
+    @Nullable
     private String header;
-    private String itemsCsv;
+    @Nullable
+    private String items_csv;
+    @Nullable
     private String filename;
 }

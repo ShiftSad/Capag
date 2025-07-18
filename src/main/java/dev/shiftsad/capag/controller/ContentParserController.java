@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -71,5 +72,17 @@ public class ContentParserController {
     @GetMapping("/health")
     public Mono<HealthCheckResponseDto> checkHealth() {
         return contentParserService.healthCheck();
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleRuntimeException(RuntimeException ex) {
+        return Map.of("error", "Ocorreu um erro: " + ex.getMessage());
+    }
+
+    @ExceptionHandler(ServerWebInputException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleInputException(ServerWebInputException ex) {
+        return Map.of("error", "Entrada inválida: " + ex.getReason());
     }
 }

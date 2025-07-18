@@ -1,5 +1,7 @@
 package dev.shiftsad.capag.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.shiftsad.capag.dto.ConversationAnswerRequestDto;
 import dev.shiftsad.capag.dto.ConversationAnswerResponseDto;
 import dev.shiftsad.capag.dto.ConversationCreateResponseDto;
@@ -9,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
@@ -35,8 +36,24 @@ public class ContentParserService {
     public void init() {
         this.webClient = WebClient.builder()
                 .baseUrl(baseUrl)
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
+                .defaultHeaders(headers -> headers.setBearerAuth(apiKey))
                 .build();
+    }
+
+    private static String formatApiError(String errorBody) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readTree(errorBody);
+            if (node.has("detail")) {
+                return node.get("detail").asText();
+            }
+            if (node.has("message")) {
+                return node.get("message").asText();
+            }
+            return errorBody;
+        } catch (Exception e) {
+            return errorBody;
+        }
     }
 
     public Mono<ConversationCreateResponseDto> createConversation(
@@ -60,7 +77,7 @@ public class ContentParserService {
                 .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
                         clientResponse -> clientResponse.bodyToMono(String.class)
                                 .flatMap(errorBody -> Mono.error(
-                                        new RuntimeException("API Error: " + errorBody))))
+                                        new RuntimeException(formatApiError(errorBody)))))
                 .bodyToMono(ConversationCreateResponseDto.class);
     }
 
@@ -74,7 +91,7 @@ public class ContentParserService {
                 .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
                         clientResponse -> clientResponse.bodyToMono(String.class)
                                 .flatMap(errorBody -> Mono.error(
-                                        new RuntimeException("API Error: " + errorBody))))
+                                        new RuntimeException(formatApiError(errorBody)))))
                 .bodyToMono(ConversationAnswerResponseDto.class);
     }
 
@@ -85,7 +102,7 @@ public class ContentParserService {
                 .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
                         clientResponse -> clientResponse.bodyToMono(String.class)
                                 .flatMap(errorBody -> Mono.error(
-                                        new RuntimeException("API Error: " + errorBody))))
+                                        new RuntimeException(formatApiError(errorBody)))))
                 .bodyToMono(ConversationCreateResponseDto.class);
     }
 
@@ -96,7 +113,7 @@ public class ContentParserService {
                 .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
                         clientResponse -> clientResponse.bodyToMono(String.class)
                                 .flatMap(errorBody -> Mono.error(
-                                        new RuntimeException("API Error: " + errorBody))))
+                                        new RuntimeException(formatApiError(errorBody)))))
                 .bodyToMono(new ParameterizedTypeReference<>() {});
     }
 
@@ -107,7 +124,8 @@ public class ContentParserService {
                 .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
                         clientResponse -> clientResponse.bodyToMono(String.class)
                                 .flatMap(errorBody -> Mono.error(
-                                        new RuntimeException("API Error: " + errorBody))))
+                                        new RuntimeException(formatApiError(errorBody))))
+                )
                 .bodyToMono(HealthCheckResponseDto.class);
     }
 }
