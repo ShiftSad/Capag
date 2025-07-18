@@ -1,6 +1,7 @@
 package dev.shiftsad.capag.dto;
 
 import lombok.Data;
+
 import java.util.Map;
 
 @Data
