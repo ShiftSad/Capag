@@ -1,0 +1,15 @@
+meta {
+  name: Get all recent
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ip}}/population?ano=2024
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ano: 2024
+}

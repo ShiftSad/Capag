@@ -1,0 +1,16 @@
+meta {
+  name: Get recent by name
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{ip}}/population?municipio=Jaru&ano=2024
+  body: none
+  auth: inherit
+}
+
+params:query {
+  municipio: Jaru
+  ano: 2024
+}

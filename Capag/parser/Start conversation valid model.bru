@@ -1,0 +1,16 @@
+meta {
+  name: Start conversation valid model
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{ip}}/parser/conversation
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  model: gemini-2.5-flash
+  pdf_file: @file(C:\Users\rosal\Downloads\arquivo_3.pdf)
+}

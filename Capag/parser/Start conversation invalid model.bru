@@ -1,0 +1,16 @@
+meta {
+  name: Start conversation invalid model
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ip}}/parser/conversation
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  model: Câmbio flutuante
+  pdf_file: @file(C:\Users\rosal\Downloads\arquivo_3.pdf)
+}

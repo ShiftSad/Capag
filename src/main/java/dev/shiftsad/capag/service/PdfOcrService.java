@@ -58,7 +58,7 @@ public class PdfOcrService {
             List<BufferedImage> images = new ArrayList<>(pageCount);
             for (int i = 0; i < pageCount; i++) {
                 try {
-                    images.add(renderer.renderImageWithDPI(i, 300, ImageType.GRAY));
+                    images.add(renderer.renderImageWithDPI(i, 150, ImageType.GRAY));
                 } catch (IOException e) {
                     logger.error("Falha ao renderizar página {}: {}", i, e.getMessage());
                     images.add(null);

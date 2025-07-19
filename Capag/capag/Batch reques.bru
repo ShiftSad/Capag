@@ -1,0 +1,26 @@
+meta {
+  name: Batch reques
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{ip}}/population/batch
+  body: json
+  auth: inherit
+}
+
+body:json {
+  [
+    {
+      "ano": 2024,
+      "municipio": "São Paulo",
+      "uf": "SP"
+    },
+    {
+      "ano": 2024,
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ"
+    }
+  ]
+}

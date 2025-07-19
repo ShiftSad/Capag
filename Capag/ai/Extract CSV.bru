@@ -1,0 +1,16 @@
+meta {
+  name: Extract CSV
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ip}}/ai/generateStream
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  type: csv
+  file: @file(C:\Users\rosal\Downloads\cebfe9f-16.pdf)
+}
